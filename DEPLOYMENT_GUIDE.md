@@ -160,7 +160,7 @@ Your app is now live at a URL like: `https://expense-tracker-xxxxx.vercel.app`
 6. Vercel will automatically redeploy with the new icons
 
 ---
-
+## try auto deploy 
 ## Step 6: Install on Your Phone (PWA)
 
 ### iPhone/iPad:
