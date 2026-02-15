@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpendWise - Generate PWA Icons</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f1f5f9;
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      color: #6366f1;
+    }
+
+    p.subtitle {
+      color: #64748b;
+      margin-bottom: 40px;
+      text-align: center;
+      max-width: 500px;
+      line-height: 1.5;
+    }
+
+    .icons-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      justify-content: center;
+    }
+
+    .icon-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .icon-card h2 {
+      font-size: 1.1rem;
+      color: #334155;
+    }
+
+    .icon-card canvas {
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(99, 102, 241, 0.25);
+    }
+
+    .icon-card .dimensions {
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    .download-btn {
+      display: inline-block;
+      padding: 12px 28px;
+      background: #6366f1;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .download-btn:hover {
+      background: #4f46e5;
+    }
+
+    .instructions {
+      margin-top: 48px;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 28px 32px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+      max-width: 620px;
+      width: 100%;
+    }
+
+    .instructions h3 {
+      margin-bottom: 12px;
+      color: #6366f1;
+    }
+
+    .instructions ol {
+      padding-left: 20px;
+      line-height: 1.8;
+      color: #475569;
+    }
+
+    .instructions code {
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      color: #6366f1;
+    }
+  </style>
+</head>
+<body>
+  <h1>SpendWise Icon Generator</h1>
+  <p class="subtitle">
+    Generate PNG icons for the SpendWise PWA. Click the download buttons below
+    to save each icon, then place them in your <code>public/icons/</code> folder.
+  </p>
+
+  <div class="icons-container">
+    <!-- 192x192 Icon -->
+    <div class="icon-card">
+      <h2>Small Icon</h2>
+      <canvas id="canvas192" width="192" height="192"></canvas>
+      <span class="dimensions">192 &times; 192 px</span>
+      <button class="download-btn" onclick="downloadIcon(192)">Download icon-192.png</button>
+    </div>
+
+    <!-- 512x512 Icon -->
+    <div class="icon-card">
+      <h2>Large Icon</h2>
+      <canvas id="canvas512" width="512" height="512"></canvas>
+      <span class="dimensions">512 &times; 512 px</span>
+      <button class="download-btn" onclick="downloadIcon(512)">Download icon-512.png</button>
+    </div>
+  </div>
+
+  <div class="instructions">
+    <h3>How to use</h3>
+    <ol>
+      <li>Click each <strong>Download</strong> button above to save the PNG files.</li>
+      <li>Move <code>icon-192.png</code> and <code>icon-512.png</code> into <code>public/icons/</code>.</li>
+      <li>
+        Reference them in your <code>manifest.json</code>:
+        <pre style="background:#f8fafc; padding:12px; border-radius:8px; margin-top:8px; font-size:0.85em; overflow-x:auto;"><code>{
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}</code></pre>
+      </li>
+    </ol>
+  </div>
+
+  <script>
+    /**
+     * Draws the SpendWise icon on a canvas at the given size.
+     * Design: Indigo rounded-rect background with a white wallet icon and dollar sign.
+     */
+    function drawIcon(canvas, size) {
+      const ctx = canvas.getContext('2d');
+      const s = size / 512; // scale factor (design is based on 512)
+
+      // --- Background ---
+      const radius = 102 * s;
+      ctx.beginPath();
+      roundRect(ctx, 0, 0, size, size, radius);
+      ctx.fillStyle = '#6366f1';
+      ctx.fill();
+
+      // --- Subtle gradient overlay for depth ---
+      const grad = ctx.createLinearGradient(0, 0, size, size);
+      grad.addColorStop(0, 'rgba(255,255,255,0.12)');
+      grad.addColorStop(1, 'rgba(0,0,0,0.08)');
+      ctx.beginPath();
+      roundRect(ctx, 0, 0, size, size, radius);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // --- Wallet body ---
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 18 * s;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      const walletX = 96 * s;
+      const walletY = 155 * s;
+      const walletW = 320 * s;
+      const walletH = 224 * s;
+      const walletR = 28 * s;
+
+      ctx.beginPath();
+      roundRect(ctx, walletX, walletY, walletW, walletH, walletR);
+      ctx.stroke();
+
+      // --- Wallet flap (top fold) ---
+      ctx.beginPath();
+      ctx.moveTo(walletX, 210 * s);
+      ctx.lineTo(walletX, 175 * s);
+      ctx.quadraticCurveTo(walletX, 134 * s, (walletX + 48 * s), 134 * s);
+      ctx.lineTo(368 * s, 134 * s);
+      ctx.quadraticCurveTo(394 * s, 134 * s, 394 * s, 160 * s);
+      ctx.lineTo(394 * s, 210 * s);
+      ctx.stroke();
+
+      // --- Clasp / card slot on the right ---
+      const claspX = 320 * s;
+      const claspY = 236 * s;
+      const claspW = 96 * s;
+      const claspH = 68 * s;
+      const claspR = 18 * s;
+
+      ctx.beginPath();
+      roundRect(ctx, claspX, claspY, claspW, claspH, claspR);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+      ctx.fill();
+
+      // Clasp circle
+      ctx.beginPath();
+      ctx.arc(claspX + 32 * s, claspY + claspH / 2, 12 * s, 0, Math.PI * 2);
+      ctx.fillStyle = '#6366f1';
+      ctx.fill();
+
+      // --- Dollar sign ---
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `bold ${96 * s}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('$', 210 * s, 285 * s);
+    }
+
+    /**
+     * Helper: draw a rounded rectangle path.
+     */
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.arcTo(x + w, y, x + w, y + r, r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+      ctx.lineTo(x + r, y + h);
+      ctx.arcTo(x, y + h, x, y + h - r, r);
+      ctx.lineTo(x, y + r);
+      ctx.arcTo(x, y, x + r, y, r);
+      ctx.closePath();
+    }
+
+    /**
+     * Triggers a PNG download from the specified canvas.
+     */
+    function downloadIcon(size) {
+      const canvas = document.getElementById('canvas' + size);
+      const link = document.createElement('a');
+      link.download = 'icon-' + size + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    // --- Draw both icons on page load ---
+    window.addEventListener('DOMContentLoaded', function () {
+      drawIcon(document.getElementById('canvas192'), 192);
+      drawIcon(document.getElementById('canvas512'), 512);
+    });
+  </script>
+</body>
+</html>
